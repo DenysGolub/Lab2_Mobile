@@ -24,6 +24,7 @@ sealed class SettingsRoutes(val route: String) {
     object Main : SettingsRoutes("main")
     object Theme : SettingsRoutes("theme")
     object Language : SettingsRoutes("language")
+    object LanguageDetails : SettingsRoutes("language_details")
 }
 
 @Composable
@@ -52,9 +53,18 @@ fun SettingsPage(modifier: Modifier, viewModel: SettingsViewModel) {
         composable(SettingsRoutes.Language.route) {
             LanguageScreen(
                 language = viewModel.language.observeAsState("Українська").value,
+                onBack = { navController.popBackStack() },
+                onGoDetails = { navController.navigate(SettingsRoutes.LanguageDetails.route) }
+            )
+        }
+
+
+        composable(SettingsRoutes.LanguageDetails.route) {
+            LanguageDetailsScreen(
                 onBack = { navController.popBackStack() }
             )
         }
+
     }
 }
 
@@ -165,7 +175,7 @@ fun ThemeScreen(onBack: () -> Unit, isDarkMode: Boolean) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LanguageScreen(onBack: () -> Unit, language: String) {
+fun LanguageScreen(onBack: () -> Unit, language: String, onGoDetails: () -> Unit) {
     Scaffold(
         topBar = {
             LargeTopAppBar(
@@ -205,7 +215,48 @@ fun LanguageScreen(onBack: () -> Unit, language: String) {
                         Text("English")
                     }
                 }
+                Button(onClick = onGoDetails) {
+                    Text("Перейти до третього підекрану")
+                }
             }
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LanguageDetailsScreen(onBack: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Назад"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+            )
+        },
+        content = { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Це третій підекран",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    )
+}
+
